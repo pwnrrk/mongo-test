@@ -32,4 +32,16 @@ export default class Test extends Controller {
       database.close();
     }
   }
+  async delete(http: Http) {
+    const database = new Mongo();
+    try {
+      const query = { name: http.request.body.name };
+      const user = await database.db
+        .collection("users")
+        .findOneAndDelete(query);
+      http.response.json({ status: "ok", deleted: user });
+    } finally {
+      database.close();
+    }
+  }
 }

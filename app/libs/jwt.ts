@@ -18,14 +18,15 @@ function verifiyToken(
     ? request.headers.authorization.split(" ")[0]
     : "";
   if (!token || prefix != "Bearer:") {
-    return response.status(403);
+    return response.status(403).json({ message: "Invalid Token" });
   }
   try {
-    if (!config.TOKEN_KEY) return response.status(500);
+    if (!config.TOKEN_KEY)
+      return response.status(500).json({ message: "Internal Exception" });
     const decoded = jwt.verify(token, config.TOKEN_KEY, {});
     request.body.user = decoded;
   } catch (error) {
-    return response.status(401);
+    return response.status(401).json({ message: "Unauthorized" });
   }
   return next();
 }
