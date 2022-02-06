@@ -1,23 +1,50 @@
 import Controller from "../libs/controller";
 import { Http } from "../libs/http";
 import Mongo from "../libs/mongodb";
+import User from "../models/user";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export default class User extends Controller {
+export default class UserController extends Controller {
   async save(http: Http) {
-    const database = new Mongo();
     try {
-      const users = database.db.collection("users");
-      await users?.insertOne(http.request.body);
-      http.response.json({ status: "ok", message: "saved!" });
-    } finally {
-      database.close();
+      const userData = http.request.body;
+      const oldUser = await User.findOne({ email: userData.email });
+
+      if (oldUser)
+        return http.response
+          .status(409)
+          .json({ status: "failed", message: "User already register" });
+
+      const encryptedPassword = await bcrypt.hash(userData.password, 10);
+      userData.password = encryptedPassword;
+      const user = await User.create(userData);
+      const token = jwt.sign(
+        {
+          user_id: user._id,
+          email: user.email,
+        },
+        process.env.TOKEN_KEY as string,
+        {
+          expiresIn: "3d",
+        }
+      );
+      user.token = token;
+      http.response.json({
+        status: "ok",
+        message: "saved!",
+        data: user,
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
   async get(http: Http) {
     const database = new Mongo();
     try {
       const users = await database.db.collection("users").find().toArray();
-      http.response.json(users);
+      const count = await database.db.collection("users").countDocuments();
+      http.response.json({ total: count, data: users });
     } finally {
       database.close();
     }
