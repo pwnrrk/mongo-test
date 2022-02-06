@@ -9,8 +9,7 @@
     "dev": "tsc -w | nodemon ./build/server.js --exec 'npm run lint && node'",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "command": "node ./build/command.js",
-    "db": "prisma"
+    "command": "node ./build/command.js"
   },
   "keywords": [],
   "author": "R.Phuwanat",
@@ -31,12 +30,10 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-prettier": "^4.0.0",
     "nodemon": "^2.0.15",
-    "prisma": "^3.4.2",
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@prisma/client": "^3.4.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
