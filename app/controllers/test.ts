@@ -44,4 +44,15 @@ export default class Test extends Controller {
       database.close();
     }
   }
+  async findOne(http: Http) {
+    const database = new Mongo();
+    try {
+      const query = { name: http.request.params.name };
+      const user = await database.db.collection("users").findOne(query);
+      if (user) return http.response.json(user);
+      http.response.status(404).json({ message: "No users" });
+    } finally {
+      database.close();
+    }
+  }
 }
