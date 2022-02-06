@@ -1,12 +1,11 @@
 import Controller from "../libs/controller";
 import { Http } from "../libs/http";
-import Mongo from "../libs/mongodb";
 import User from "../models/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export default class UserController extends Controller {
-  async save(http: Http) {
+  async register(http: Http) {
     try {
       const userData = http.request.body;
       const oldUser = await User.findOne({ email: userData.email });
@@ -39,47 +38,28 @@ export default class UserController extends Controller {
       console.log(error);
     }
   }
-  async get(http: Http) {
-    const database = new Mongo();
+  async login(http: Http) {
     try {
-      const users = await database.db.collection("users").find().toArray();
-      const count = await database.db.collection("users").countDocuments();
-      http.response.json({ total: count, data: users });
-    } finally {
-      database.close();
-    }
-  }
-  async find(http: Http) {
-    const database = new Mongo();
-    try {
-      const query = { age: { $lt: 20 } };
-      const users = await database.db.collection("users").find(query).toArray();
-      http.response.json(users);
-    } finally {
-      database.close();
-    }
-  }
-  async delete(http: Http) {
-    const database = new Mongo();
-    try {
-      const query = { name: http.request.body.name };
-      const user = await database.db
-        .collection("users")
-        .findOneAndDelete(query);
-      http.response.json({ status: "ok", deleted: user });
-    } finally {
-      database.close();
-    }
-  }
-  async findOne(http: Http) {
-    const database = new Mongo();
-    try {
-      const query = { name: http.request.params.name };
-      const user = await database.db.collection("users").findOne(query);
-      if (user) return http.response.json(user);
-      http.response.status(404).json({ message: "No users" });
-    } finally {
-      database.close();
+      const { email, password } = http.request.body;
+      const user = await User.findOne({ email: email });
+      if (!user)
+        return http.response
+          .status(404)
+          .json({ status: "fail", message: "No user founded" });
+      const verified = await bcrypt.compare(password, user.password);
+      if (!verified)
+        return http.response
+          .status(401)
+          .json({ status: "fail", message: "Invalid creadentials" });
+      const token = jwt.sign(
+        { user_id: user._id, email },
+        process.env.TOKEN_KEY as string,
+        { expiresIn: "3d" }
+      );
+      user.token = token;
+      http.response.json({ status: "ok", message: "success", data: user });
+    } catch (error) {
+      console.trace(error);
     }
   }
 }

@@ -1,8 +1,10 @@
 import { ObjectId } from "bson";
+import mongoose from "mongoose";
 
-export default interface Post {
-  _id: ObjectId;
-  title: string;
-  content_url: string;
-  author_id: ObjectId;
-}
+const postSchema = new mongoose.Schema({
+  title: { type: String },
+  date: { type: String },
+  author_id: { type: ObjectId },
+});
+
+export default mongoose.model("post", postSchema);
