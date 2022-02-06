@@ -18,7 +18,6 @@ function verifiyToken(
   const prefix = request.headers.authorization
     ? request.headers.authorization.split(" ")[0]
     : "";
-  console.log(prefix, token);
   if (!token || prefix !== "Bearer") {
     return response.status(403).json({ message: "Invalid Token" });
   }
