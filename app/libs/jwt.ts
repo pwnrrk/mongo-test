@@ -12,12 +12,14 @@ function verifiyToken(
   const token =
     request.body.token ||
     request.query.token ||
+    request.headers["x-access-token"] ||
     (request.headers.authorization &&
       request.headers.authorization.split(" ")[1]);
   const prefix = request.headers.authorization
     ? request.headers.authorization.split(" ")[0]
     : "";
-  if (!token || prefix != "Bearer:") {
+  console.log(prefix, token);
+  if (!token || prefix !== "Bearer") {
     return response.status(403).json({ message: "Invalid Token" });
   }
   try {
