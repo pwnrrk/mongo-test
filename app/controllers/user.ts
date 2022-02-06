@@ -2,7 +2,7 @@ import Controller from "../libs/controller";
 import { Http } from "../libs/http";
 import Mongo from "../libs/mongodb";
 
-export default class Test extends Controller {
+export default class User extends Controller {
   async save(http: Http) {
     const database = new Mongo();
     try {
