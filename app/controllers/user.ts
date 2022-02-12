@@ -1,6 +1,6 @@
-import Controller from "../libs/controller";
-import { Http } from "../libs/http";
-import User from "../models/user";
+import Controller from "libs/controller";
+import { Http } from "libs/http";
+import User from "models/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 

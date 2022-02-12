@@ -1,6 +1,6 @@
-import Controller from "../libs/controller";
-import { Http } from "../libs/http";
-import Post from "../models/post";
+import Controller from "libs/controller";
+import { Http } from "libs/http";
+import Post from "models/post";
 
 export default class PostController extends Controller {
   async save(http: Http) {
